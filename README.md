@@ -26,7 +26,7 @@ It is also possible to just place the simple\_router\_auth\_poc directory in the
     #sudo apt install python-pip # not necessary any more for on an up to date installation
     #sudo -H pip install --upgrade pip
     ./install_deps.sh
-    sudo pip install thrift # otherwise mininet fails to launch (running install_deps.sh does not resolve it)
+    sudo pip install thrift # otherwise mininet fails to launch (running install_deps.sh as root does not resolve it)
 
 Add P4 auth code:
 
