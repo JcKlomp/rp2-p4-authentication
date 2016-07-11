@@ -133,7 +133,7 @@ AC_CHECK_HEADER([boost/filesystem.hpp], [], [AC_MSG_ERROR([Missing boost filesys
 AC_SUBST([AM_CPPFLAGS], ["$MY_CPPFLAGS \
                           -I\$(top_srcdir)/include \
                           -isystem\$(top_srcdir)/third_party/jsoncpp/include \
-                          -isystem\$(top_srcdir)/third_party/spdlog"])
+                          -isystem\$(top_srcdir)/third_party/spdlog/include"])
 
 AC_SUBST([AM_CXXFLAGS], ["-Wall -Werror -Wextra"])
 AC_SUBST([AM_CFLAGS], [""])
@@ -145,7 +145,7 @@ AC_TYPE_SIZE_T
 AC_TYPE_UINT64_T
 AC_LANG_POP(C++)
 
-# Generate makefiles (include targets/simple_router_auth_poc/Makefile)
+# Generate makefiles
 AC_CONFIG_FILES([Makefile
 		thrift_src/Makefile
 		third_party/Makefile
@@ -162,7 +162,7 @@ AC_CONFIG_FILES([Makefile
 		src/bm_apps/examples/Makefile
 		targets/Makefile
 		targets/simple_router/Makefile
-    targets/simple_router_auth_poc/Makefile
+                targets/simple_router_auth_poc/Makefile
 		targets/l2_switch/Makefile
 		targets/l2_switch/learn_client/Makefile
 		targets/simple_switch/Makefile
