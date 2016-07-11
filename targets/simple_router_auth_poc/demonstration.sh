@@ -9,9 +9,13 @@
 # then : . script.sh
 # or   : source script.sh
 #
-# or tmux new "bash -c '. script.sh" # but this creates interactivity problems
-#
 # on very slow systems the timeout for adding the table entries defined in mininet.sh might need to be increased
+#
+# tmux should be started as root, or sudo setup correctly (otherwise the table entries need to be added manually after startup)
+# setting up sudo means that it allows executing packet_sender.py and mininet as root without password, e.g.:
+# user ALL=(ALL:ALL) NOPASSWD: /usr/bin/python2 packet_sender.py, /usr/bin/python2 1sw_demo.py *
+#
+# tshark (/usr/bin/dumpcap) should be allowed non-superusers.
 
 end_demonstration(){
   tmux kill-session
@@ -34,9 +38,9 @@ tmux select-pane -t 0
 # the p4 force_drop action (truncation of the packet to zero) still creates a weird empty (zero-length) ethernet frame on the egress interface which trips up tshark so tshark on that interface needs to be restarted
 # another work around is to listen on multiple interfaces
 # while loop used to restart tshark, also for the eth1 because it might make it easier if mininet is killed
-tmux send-keys -t 1 "export PS1=\"\"; sleep 1 && while true; do ./tshark.sh -i s1-eth1; done & clear && echo -e \"H1 - \e[1mS1-ETH1\e[0m - S1: \n\e[4m# Src        => Dst       Prot Type Data    ID         Seq Chksum\e[0m\"" C-m
+tmux send-keys -t 1 "export PS1=\"\"; sleep 1 && while true; do ./tshark.sh -i s1-eth1; sleep 1; done & clear && echo -e \"H1 - \e[1mS1-ETH1\e[0m - S1: \n\e[4m# Src        => Dst       Prot Type Data    ID         Seq Chksum\e[0m\"" C-m
 
-tmux send-keys -t 2 "export PS1=\"\"; sleep 1 && while true; do ./tshark.sh -i s1-eth2; done & clear && echo -e \"S1 - \e[1mS1-ETH2\e[0m - H2: \n\e[4m# Src        => Dst       Prot Type Data    ID         Seq Chksum\e[0m\"" C-m
+tmux send-keys -t 2 "export PS1=\"\"; sleep 1 && while true; do ./tshark.sh -i s1-eth2; sleep 1; done & clear && echo -e \"S1 - \e[1mS1-ETH2\e[0m - H2: \n\e[4m# Src        => Dst       Prot Type Data    ID         Seq Chksum\e[0m\"" C-m
 
 
 tmux select-pane -t 3
