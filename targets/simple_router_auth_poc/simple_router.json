@@ -1,0 +1,1366 @@
+{
+    "header_types": [
+        {
+            "name": "standard_metadata_t",
+            "id": 0,
+            "fields": [
+                [
+                    "ingress_port",
+                    9
+                ],
+                [
+                    "packet_length",
+                    32
+                ],
+                [
+                    "egress_spec",
+                    9
+                ],
+                [
+                    "egress_port",
+                    9
+                ],
+                [
+                    "egress_instance",
+                    32
+                ],
+                [
+                    "instance_type",
+                    32
+                ],
+                [
+                    "clone_spec",
+                    32
+                ],
+                [
+                    "_padding",
+                    5
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "ethernet_t",
+            "id": 1,
+            "fields": [
+                [
+                    "dstAddr",
+                    48
+                ],
+                [
+                    "srcAddr",
+                    48
+                ],
+                [
+                    "etherType",
+                    16
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "ipv4_t",
+            "id": 2,
+            "fields": [
+                [
+                    "version",
+                    4
+                ],
+                [
+                    "ihl",
+                    4
+                ],
+                [
+                    "diffserv",
+                    8
+                ],
+                [
+                    "totalLen",
+                    16
+                ],
+                [
+                    "identification",
+                    16
+                ],
+                [
+                    "flags",
+                    3
+                ],
+                [
+                    "fragOffset",
+                    13
+                ],
+                [
+                    "ttl",
+                    8
+                ],
+                [
+                    "protocol",
+                    8
+                ],
+                [
+                    "hdrChecksum",
+                    16
+                ],
+                [
+                    "srcAddr",
+                    32
+                ],
+                [
+                    "dstAddr",
+                    32
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "gre_t",
+            "id": 3,
+            "fields": [
+                [
+                    "flags",
+                    16
+                ],
+                [
+                    "protocolType",
+                    16
+                ],
+                [
+                    "checksum",
+                    16
+                ],
+                [
+                    "offset",
+                    16
+                ],
+                [
+                    "key",
+                    32
+                ],
+                [
+                    "sequenceNumber",
+                    32
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "routing_metadata_t",
+            "id": 4,
+            "fields": [
+                [
+                    "nhop_ipv4",
+                    32
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        },
+        {
+            "name": "gre_metadata_t",
+            "id": 5,
+            "fields": [
+                [
+                    "validKey",
+                    1
+                ],
+                [
+                    "index",
+                    16
+                ],
+                [
+                    "hashKey",
+                    16
+                ],
+                [
+                    "prevSequenceNumber",
+                    32
+                ],
+                [
+                    "computedHash",
+                    16
+                ],
+                [
+                    "emptyChecksum",
+                    16
+                ],
+                [
+                    "_padding",
+                    7
+                ]
+            ],
+            "length_exp": null,
+            "max_length": null
+        }
+    ],
+    "headers": [
+        {
+            "name": "standard_metadata",
+            "id": 0,
+            "header_type": "standard_metadata_t",
+            "metadata": true
+        },
+        {
+            "name": "ethernet",
+            "id": 1,
+            "header_type": "ethernet_t",
+            "metadata": false
+        },
+        {
+            "name": "ipv4",
+            "id": 2,
+            "header_type": "ipv4_t",
+            "metadata": false
+        },
+        {
+            "name": "gre",
+            "id": 3,
+            "header_type": "gre_t",
+            "metadata": false
+        },
+        {
+            "name": "routing_metadata",
+            "id": 4,
+            "header_type": "routing_metadata_t",
+            "metadata": true
+        },
+        {
+            "name": "gre_metadata",
+            "id": 5,
+            "header_type": "gre_metadata_t",
+            "metadata": true
+        }
+    ],
+    "header_stacks": [],
+    "parsers": [
+        {
+            "name": "parser",
+            "id": 0,
+            "init_state": "start",
+            "parse_states": [
+                {
+                    "name": "start",
+                    "id": 0,
+                    "parser_ops": [],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "value": "default",
+                            "mask": null,
+                            "next_state": "parse_ethernet"
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ethernet",
+                    "id": 1,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "ethernet"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "etherType"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "value": "0x0800",
+                            "mask": null,
+                            "next_state": "parse_ipv4"
+                        },
+                        {
+                            "value": "default",
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_ipv4",
+                    "id": 2,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "ipv4"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "protocol"
+                            ]
+                        }
+                    ],
+                    "transitions": [
+                        {
+                            "value": "0x2f",
+                            "mask": null,
+                            "next_state": "parse_gre"
+                        },
+                        {
+                            "value": "default",
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                },
+                {
+                    "name": "parse_gre",
+                    "id": 3,
+                    "parser_ops": [
+                        {
+                            "op": "extract",
+                            "parameters": [
+                                {
+                                    "type": "regular",
+                                    "value": "gre"
+                                }
+                            ]
+                        }
+                    ],
+                    "transition_key": [],
+                    "transitions": [
+                        {
+                            "value": "default",
+                            "mask": null,
+                            "next_state": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "deparsers": [
+        {
+            "name": "deparser",
+            "id": 0,
+            "order": [
+                "ethernet",
+                "ipv4",
+                "gre"
+            ]
+        }
+    ],
+    "meter_arrays": [],
+    "actions": [
+        {
+            "name": "set_gre_key_invalid",
+            "id": 0,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "validKey"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "set_dmac",
+            "id": 1,
+            "runtime_data": [
+                {
+                    "name": "dmac",
+                    "bitwidth": 48
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "dstAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "remove_gre",
+            "id": 2,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "remove_header",
+                    "parameters": [
+                        {
+                            "type": "header",
+                            "value": "gre"
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "protocol"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
+                        }
+                    ]
+                },
+                {
+                    "op": "add_to_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "totalLen"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "-0x10"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_drop",
+            "id": 3,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                }
+            ]
+        },
+        {
+            "name": "force_drop",
+            "id": 4,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "drop",
+                    "parameters": []
+                },
+                {
+                    "op": "truncate",
+                    "parameters": [
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "compute_gre_hash",
+            "id": 5,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "modify_field_with_hash_based_offset",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "computedHash"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x0"
+                        },
+                        {
+                            "type": "calculation",
+                            "value": "gre_checksum"
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x10000"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "rewrite_mac",
+            "id": 6,
+            "runtime_data": [
+                {
+                    "name": "smac",
+                    "bitwidth": 48
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ethernet",
+                                "srcAddr"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "update_gre_sequence_number",
+            "id": 7,
+            "runtime_data": [],
+            "primitives": [
+                {
+                    "op": "register_write",
+                    "parameters": [
+                        {
+                            "type": "register_array",
+                            "value": "sequence_number_reg"
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "index"
+                            ]
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre",
+                                "sequenceNumber"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "set_nhop",
+            "id": 8,
+            "runtime_data": [
+                {
+                    "name": "nhop_ipv4",
+                    "bitwidth": 32
+                },
+                {
+                    "name": "port",
+                    "bitwidth": 9
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "routing_metadata",
+                                "nhop_ipv4"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "standard_metadata",
+                                "egress_port"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "add_to_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "ipv4",
+                                "ttl"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "-0x1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_no_op",
+            "id": 9,
+            "runtime_data": [],
+            "primitives": []
+        },
+        {
+            "name": "set_gre_key_valid",
+            "id": 10,
+            "runtime_data": [
+                {
+                    "name": "idx",
+                    "bitwidth": 16
+                },
+                {
+                    "name": "key",
+                    "bitwidth": 16
+                }
+            ],
+            "primitives": [
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "validKey"
+                            ]
+                        },
+                        {
+                            "type": "hexstr",
+                            "value": "0x1"
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "hashKey"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "op": "modify_field",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "index"
+                            ]
+                        },
+                        {
+                            "type": "runtime_data",
+                            "value": 0
+                        }
+                    ]
+                },
+                {
+                    "op": "register_read",
+                    "parameters": [
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "prevSequenceNumber"
+                            ]
+                        },
+                        {
+                            "type": "register_array",
+                            "value": "sequence_number_reg"
+                        },
+                        {
+                            "type": "field",
+                            "value": [
+                                "gre_metadata",
+                                "index"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "pipelines": [
+        {
+            "name": "ingress",
+            "id": 0,
+            "init_table": "_condition_0",
+            "tables": [
+                {
+                    "name": "ipv4_lpm",
+                    "id": 0,
+                    "match_type": "lpm",
+                    "type": "simple",
+                    "max_size": 1024,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "lpm",
+                            "target": [
+                                "ipv4",
+                                "dstAddr"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "set_nhop",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "set_nhop": "forward",
+                        "_drop": "forward"
+                    },
+                    "base_default_next": "forward"
+                },
+                {
+                    "name": "forward",
+                    "id": 1,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 512,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "routing_metadata",
+                                "nhop_ipv4"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "set_dmac",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "set_dmac": null,
+                        "_drop": null
+                    },
+                    "base_default_next": null
+                }
+            ],
+            "conditionals": [
+                {
+                    "name": "_condition_0",
+                    "id": 0,
+                    "expression": {
+                        "type": "expression",
+                        "value": {
+                            "op": "and",
+                            "left": {
+                                "type": "expression",
+                                "value": {
+                                    "op": "valid",
+                                    "left": null,
+                                    "right": {
+                                        "type": "header",
+                                        "value": "ipv4"
+                                    }
+                                }
+                            },
+                            "right": {
+                                "type": "expression",
+                                "value": {
+                                    "op": ">",
+                                    "left": {
+                                        "type": "field",
+                                        "value": [
+                                            "ipv4",
+                                            "ttl"
+                                        ]
+                                    },
+                                    "right": {
+                                        "type": "hexstr",
+                                        "value": "0x0"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "true_next": "ipv4_lpm",
+                    "false_next": null
+                }
+            ]
+        },
+        {
+            "name": "egress",
+            "id": 1,
+            "init_table": "_condition_1",
+            "tables": [
+                {
+                    "name": "send_frame",
+                    "id": 2,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 256,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "standard_metadata",
+                                "egress_port"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "rewrite_mac",
+                        "_drop"
+                    ],
+                    "next_tables": {
+                        "rewrite_mac": null,
+                        "_drop": null
+                    },
+                    "base_default_next": null
+                },
+                {
+                    "name": "gre_key",
+                    "id": 3,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [
+                        {
+                            "match_type": "exact",
+                            "target": [
+                                "gre",
+                                "key"
+                            ],
+                            "mask": null
+                        }
+                    ],
+                    "actions": [
+                        "_drop",
+                        "force_drop",
+                        "_no_op",
+                        "set_gre_key_valid",
+                        "set_gre_key_invalid"
+                    ],
+                    "next_tables": {
+                        "_drop": "_condition_2",
+                        "force_drop": "_condition_2",
+                        "_no_op": "_condition_2",
+                        "set_gre_key_valid": "_condition_2",
+                        "set_gre_key_invalid": "_condition_2"
+                    },
+                    "base_default_next": "_condition_2"
+                },
+                {
+                    "name": "gre_compute_hash",
+                    "id": 4,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "compute_gre_hash"
+                    ],
+                    "next_tables": {
+                        "compute_gre_hash": "_condition_4"
+                    },
+                    "base_default_next": "_condition_4"
+                },
+                {
+                    "name": "gre_update",
+                    "id": 5,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "update_gre_sequence_number"
+                    ],
+                    "next_tables": {
+                        "update_gre_sequence_number": "gre_remove"
+                    },
+                    "base_default_next": "gre_remove"
+                },
+                {
+                    "name": "gre_drop",
+                    "id": 6,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "_drop",
+                        "force_drop"
+                    ],
+                    "next_tables": {
+                        "_drop": "send_frame",
+                        "force_drop": "send_frame"
+                    },
+                    "base_default_next": "send_frame"
+                },
+                {
+                    "name": "gre_drop2",
+                    "id": 7,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "_drop",
+                        "force_drop"
+                    ],
+                    "next_tables": {
+                        "_drop": "send_frame",
+                        "force_drop": "send_frame"
+                    },
+                    "base_default_next": "send_frame"
+                },
+                {
+                    "name": "gre_drop3",
+                    "id": 8,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "_drop",
+                        "force_drop"
+                    ],
+                    "next_tables": {
+                        "_drop": "send_frame",
+                        "force_drop": "send_frame"
+                    },
+                    "base_default_next": "send_frame"
+                },
+                {
+                    "name": "gre_remove",
+                    "id": 9,
+                    "match_type": "exact",
+                    "type": "simple",
+                    "max_size": 16384,
+                    "with_counters": false,
+                    "direct_meters": null,
+                    "support_timeout": false,
+                    "key": [],
+                    "actions": [
+                        "remove_gre"
+                    ],
+                    "next_tables": {
+                        "remove_gre": "send_frame"
+                    },
+                    "base_default_next": "send_frame"
+                }
+            ],
+            "conditionals": [
+                {
+                    "name": "_condition_1",
+                    "id": 1,
+                    "expression": {
+                        "type": "expression",
+                        "value": {
+                            "op": "valid",
+                            "left": null,
+                            "right": {
+                                "type": "header",
+                                "value": "gre"
+                            }
+                        }
+                    },
+                    "true_next": "gre_key",
+                    "false_next": "send_frame"
+                },
+                {
+                    "name": "_condition_2",
+                    "id": 2,
+                    "expression": {
+                        "type": "expression",
+                        "value": {
+                            "op": "==",
+                            "left": {
+                                "type": "field",
+                                "value": [
+                                    "gre_metadata",
+                                    "validKey"
+                                ]
+                            },
+                            "right": {
+                                "type": "hexstr",
+                                "value": "0x1"
+                            }
+                        }
+                    },
+                    "true_next": "_condition_3",
+                    "false_next": "gre_drop3"
+                },
+                {
+                    "name": "_condition_3",
+                    "id": 3,
+                    "expression": {
+                        "type": "expression",
+                        "value": {
+                            "op": "and",
+                            "left": {
+                                "type": "expression",
+                                "value": {
+                                    "op": ">",
+                                    "left": {
+                                        "type": "field",
+                                        "value": [
+                                            "gre",
+                                            "sequenceNumber"
+                                        ]
+                                    },
+                                    "right": {
+                                        "type": "field",
+                                        "value": [
+                                            "gre_metadata",
+                                            "prevSequenceNumber"
+                                        ]
+                                    }
+                                }
+                            },
+                            "right": {
+                                "type": "expression",
+                                "value": {
+                                    "op": "<",
+                                    "left": {
+                                        "type": "field",
+                                        "value": [
+                                            "gre",
+                                            "sequenceNumber"
+                                        ]
+                                    },
+                                    "right": {
+                                        "type": "expression",
+                                        "value": {
+                                            "op": "+",
+                                            "left": {
+                                                "type": "field",
+                                                "value": [
+                                                    "gre_metadata",
+                                                    "prevSequenceNumber"
+                                                ]
+                                            },
+                                            "right": {
+                                                "type": "hexstr",
+                                                "value": "0x7d"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "true_next": "gre_compute_hash",
+                    "false_next": "gre_drop2"
+                },
+                {
+                    "name": "_condition_4",
+                    "id": 4,
+                    "expression": {
+                        "type": "expression",
+                        "value": {
+                            "op": "==",
+                            "left": {
+                                "type": "field",
+                                "value": [
+                                    "gre",
+                                    "checksum"
+                                ]
+                            },
+                            "right": {
+                                "type": "field",
+                                "value": [
+                                    "gre_metadata",
+                                    "computedHash"
+                                ]
+                            }
+                        }
+                    },
+                    "true_next": "gre_update",
+                    "false_next": "gre_drop"
+                }
+            ]
+        }
+    ],
+    "calculations": [
+        {
+            "name": "ipv4_checksum",
+            "id": 0,
+            "input": [
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "version"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "ihl"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "diffserv"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "totalLen"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "identification"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "flags"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "fragOffset"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "ttl"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "protocol"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "srcAddr"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "ipv4",
+                        "dstAddr"
+                    ]
+                }
+            ],
+            "algo": "csum16"
+        },
+        {
+            "name": "gre_checksum",
+            "id": 1,
+            "input": [
+                {
+                    "type": "field",
+                    "value": [
+                        "gre",
+                        "flags"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "gre",
+                        "protocolType"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "gre_metadata",
+                        "emptyChecksum"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "gre_metadata",
+                        "hashKey"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "gre",
+                        "key"
+                    ]
+                },
+                {
+                    "type": "field",
+                    "value": [
+                        "gre",
+                        "sequenceNumber"
+                    ]
+                },
+                {
+                    "type": "payload"
+                }
+            ],
+            "algo": "csum16"
+        }
+    ],
+    "checksums": [
+        {
+            "name": "ipv4.hdrChecksum|ipv4_checksum",
+            "id": 0,
+            "target": [
+                "ipv4",
+                "hdrChecksum"
+            ],
+            "type": "generic",
+            "calculation": "ipv4_checksum",
+            "if_cond": null
+        }
+    ],
+    "learn_lists": [],
+    "field_lists": [],
+    "counter_arrays": [],
+    "register_arrays": [
+        {
+            "name": "sequence_number_reg",
+            "id": 0,
+            "bitwidth": 32,
+            "size": 65536
+        }
+    ],
+    "force_arith": [
+        [
+            "standard_metadata",
+            "ingress_port"
+        ],
+        [
+            "standard_metadata",
+            "packet_length"
+        ],
+        [
+            "standard_metadata",
+            "egress_spec"
+        ],
+        [
+            "standard_metadata",
+            "egress_port"
+        ],
+        [
+            "standard_metadata",
+            "egress_instance"
+        ],
+        [
+            "standard_metadata",
+            "instance_type"
+        ],
+        [
+            "standard_metadata",
+            "clone_spec"
+        ],
+        [
+            "standard_metadata",
+            "_padding"
+        ]
+    ]
+}

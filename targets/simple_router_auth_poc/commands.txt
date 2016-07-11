@@ -1,0 +1,29 @@
+table_set_default send_frame _drop
+table_set_default forward _drop
+table_set_default ipv4_lpm _drop
+table_add send_frame rewrite_mac 1 => 00:aa:bb:00:00:00
+table_add send_frame rewrite_mac 2 => 00:aa:bb:00:00:01
+table_add forward set_dmac 10.0.0.10 => 00:04:00:00:00:00
+table_add forward set_dmac 10.0.1.10 => 00:04:00:00:00:01
+table_add ipv4_lpm set_nhop 10.0.0.10/32 => 10.0.0.10 1
+table_add ipv4_lpm set_nhop 10.0.1.10/32 => 10.0.1.10 2
+
+shell #### (only way to add comments?)
+
+table_set_default gre_key set_gre_key_invalid
+table_set_default gre_compute_hash compute_gre_hash
+table_set_default gre_remove remove_gre
+table_set_default gre_update update_gre_sequence_number
+
+table_set_default gre_drop force_drop
+table_set_default gre_drop2 force_drop
+table_set_default gre_drop3 force_drop
+
+shell # allow gre/ip/icmp with gre_key:   0x075bcd15; sequence number index 0; hash_key 0xabcd:
+table_add gre_key set_gre_key_valid 123456789 => 0 0xabcd
+shell # (this command prevents error messages about duplicte table entries due to new line when mininet is used)
+
+shell # allow gre/ip/icmp with key (id):   0x00000001; sequence number index 1; hash_key 0x1234:
+table_add gre_key set_gre_key_valid 987654321 => 1 0x1234
+shell # (this command prevents error messages about duplicte table entries due to new line when mininet is used)
+
