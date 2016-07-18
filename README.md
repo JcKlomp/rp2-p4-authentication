@@ -44,8 +44,9 @@ At this point the behavioral model should have been built including all the nece
 
 Optionally, install p4c-bm:
 
-    git clone -b master 1.0.0 https://github.com/p4lang/p4c-bm.git
+    git clone -b 1.0.0 https://github.com/p4lang/p4c-bm.git
     cd p4c-bm
+    #sudo pip install --upgrade pip # in case following command fails
     sudo pip install -r requirements.txt
     sudo python setup.py install
 
